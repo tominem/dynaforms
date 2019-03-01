@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+<f:facet name="first">
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+</f:facet>
+<h:outputStylesheet name="css/main.css" library="dynaforms" />
+</h:head>
+<h:body>
+
+<script type="text/javascript">
+
+	var contextmenu = null;
+	var selectedControl = null;
+
+    function initDND() {
+    	
+    	if (selectedControl != null) {
+    		selectedControl = $(document.getElementById(selectedControl.attr('id')));
+    		console.log(selectedControl.attr('class'));
+    		styleSelectControl(selectedControl)
+		}
+		   	
+       	$('.sidenav .ui-menu-list .ui-submenu-child').draggable({
+            scope: 'formitem',
+            helper: function() {
+                var th = $(this);
+                return th.clone().appendTo(document.body).css('width', th.width());
+            }
+         });
+       	
+    	$('.main .template-container').droppable({
+			helper: 'clone',
+            scope: 'formitem',
+            hoverClass: 'droppable-hover',
+            tolerance: 'touch',
+            drop: function(event, ui) {
+             	var type = ui.draggable.find('.ui-menuitem-text').text();
+                 formitem([
+                 	{name: 'comp-type', value: type}
+                 ]);
+            }
+        });
+
+       	$('.sidenav .ui-menu-list .ui-submenu-child .template-item').draggable({
+            scope: 'template',
+            helper: function() {
+                var th = $(this);
+                return th.clone().appendTo(document.body).css('width', th.width());
+            }
+         });
+       	
+       	$('.main').droppable({
+     		helper: 'clone',
+            scope: 'template',
+            hoverClass: 'droppable-hover',
+            tolerance: 'touch',
+            drop: function(event, ui) {
+             	var type = ui.draggable.find('.ui-menuitem-text').text();
+                 template([
+                 	{name: 'template-type', value: type}
+                 ]);
+             }
+          });
+
+       	$('#dynaForm .form-element').click(function(){
+       		styleSelectControl($(this));
+       		selectedControl = $(this);
+       	});
+       	
+       	$('.main').click(function(e){
+			if($(e.target).is('.main')){
+				$('#dynaForm .form-element').removeClass('form-element-selected-menu');
+				contextmenu.css('display', 'none');
+				selectedControl = null;
+			}
+       	});
+     	
+    }
+
+    function styleSelectControl(selectedControl){
+    	$('#dynaForm .form-element').removeClass('form-element-selected-menu');
+   		contextmenu.css('display', 'block');
+   		selectedControl.addClass('form-element-selected-menu');
+   		selectedControl.append(contextmenu);
+    }
+    
+    function setAsRequired(id){
+    	console.log('id: ' + id);
+    }
+ 
+    $(function() {
+    	contextmenu = $('.context-menu');
+        initDND();
+    });
+    
+  //# sourceURL=filename.js
+</script>
+
+<div class="sidenav">
+	<h:form id="sidebar-form" prependId="false">
+	  <p:menu toggleable="true">
+	       <p:submenu label="Template">
+	           <p:menuitem value="web-form" styleClass="template-item"/>
+	       </p:submenu>
+	       <p:submenu label="Components">
+	           <p:menuitem value="title"/>
+	           <p:menuitem value="input"/>
+	       </p:submenu>
+	  </p:menu>
+	  <div style="height: 20px"/>
+	  <p:commandButton value="Save" style="margin: 10px; margin-right: 10px; width: 200px;" action="#{formBean.save()}"/>
+	</h:form>
+</div>
+
+<div class="main">
+	<h:form id="mainForm" prependId="false">
+		<p:remoteCommand name="template" action="#{formBean.addTemplate()}" update=":mainForm" oncomplete="initDND()"/>
+		<p:remoteCommand name="formitem" action="#{formBean.addField()}" process="@this, :mainForm" update=":mainForm" oncomplete="initDND()"/>
+	
+		<h:panelGroup id="dynaFormGroup" style="display: block;" 
+					  styleClass="template-container" rendered="#{formBean.template eq 'web-form'}">
+			<pe:dynaForm id="dynaForm" value="#{formBean.model}" var="data">
+				<pe:dynaFormControl type="title" styleClass="ui-g-12">
+					<h1 contenteditable="true">Title</h1>
+					<h2 contenteditable="true">Subtitle</h2>
+				</pe:dynaFormControl>
+				<pe:dynaFormControl type="input">
+					<h:panelGroup styleClass="form-element" layout="block">
+						<f:attribute name="dataSelected" value="#{data}" />
+						<p:ajax event="click" process="@this" listener="#{formBean.dynaControlclick}"/>
+	 					<h:panelGroup layout="block">
+							<p:outputLabel value="#{data.element.label}" for="in"/>
+		 					<p:inputText id="in"
+		 								 value="#{data.value}" 
+		 								 style="#{data.element.style}" 
+		 								 placeholder="#{data.element.placeHolder}"/>
+	 					</h:panelGroup>
+					</h:panelGroup>
+				</pe:dynaFormControl>
+				<f:facet name="buttonBar">
+					<p:commandButton value="Submit"/>
+				</f:facet>
+			</pe:dynaForm>
+		</h:panelGroup>
+	</h:form>
+</div>
+
+<p:dialog id="propsDlg" header="Component properties" widgetVar="propsDlg" width="400px">
+	<h:form id="propsDlgForm" prependId="false">
+	    <h:outputText value="Search has been executed with values:"/>
+	    <p:dataTable id="props1" value="#{formBean.uiProperties}" var="property" editable="true" editMode="cell" style="margin-bottom:20px">
+        	<f:facet name="header">
+            	Row Editing
+        	</f:facet>
+        	
+        	<p:ajax event="cellEdit" update="@(.form-element-selected-menu)" oncomplete="initDND()"/>
+        	
+        	<p:column headerText="Name">
+                <h:outputText value="#{property.label}" />
+            </p:column>
+        	
+            <p:column headerText="Value">
+            	<p:cellEditor rendered="#{property.fieldTypeName eq 'String'}">
+	                <f:facet name="output"><h:outputText value="#{property.value}" /></f:facet>
+	                <f:facet name="input"><p:inputText value="#{property.value}" style="width:100%"/></f:facet>
+	            </p:cellEditor>
+	            
+	            <p:selectBooleanCheckbox value="#{property.value}" rendered="#{property.fieldTypeName eq 'Boolean'}" >
+	            	<p:ajax oncomplete="setAsRequired('#{p:component('in')}')"/>
+	            </p:selectBooleanCheckbox>
+        	</p:column>
+        	
+	    </p:dataTable>  
+	</h:form>
+</p:dialog>
+
+<h:panelGroup id="ctxMenu" styleClass="context-menu" style="height: 40px; background: red; position: absolute; top: -40px; left: 0px; display: none;">
+	<h:form>
+		<div>
+		    <p:commandButton icon="fa fa-edit" oncomplete="PF('propsDlg').show()" process="@this" update=":propsDlg :propsDlgForm"/>
+		    <p:commandButton icon="fa fa-trash"/>
+		</div>
+	</h:form>
+</h:panelGroup>
+
+</h:body>
+</html>

@@ -1,0 +1,52 @@
+package com.strandum.dynaforms.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.Type;
+
+@Entity
+public class ElementSelectValue<T> implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
+	
+	@ManyToOne
+	private FormElement formElement;
+	
+	@Type(type="java.lang.String")
+	private T value;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public FormElement getFormElement() {
+		return formElement;
+	}
+
+	public void setFormElement(FormElement formElement) {
+		this.formElement = formElement;
+	}
+
+	public T getValue() {
+		return value;
+	}
+
+	public void setValue(T value) {
+		this.value = value;
+	}
+
+}
