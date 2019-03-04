@@ -12,29 +12,29 @@
 	</f:facet>
 </h:head>
 <h:body>
-	
+
 	<style type="text/css">
-	
+		
 		.CodeMirror-scroll {
-		    border-color: rgb(169, 169, 169);
-    		border-style: solid;
-    		border-width: 1px;
-    		overflow: hidden !important;
+			border-color: rgb(169, 169, 169);
+			border-style: solid;
+			border-width: 1px;
+			overflow: hidden !important;
 		}
 		
 		.ui-g .cd-editor {
 			border-color: rgb(169, 169, 169);
-    		border-style: solid;
-    		border-width: 1px;
+			border-style: solid;
+			border-width: 1px;
 		}
 		
 		.ui-g button {
 			width: 100%;
 		}
 		
-    </style>
-    
-    <script type="application/javascript">
+	</style>
+
+	<script type="application/javascript">
     	
 	    function resizeIFrameToFitContent( iFrame ) {
 	
@@ -48,49 +48,72 @@
 		}
     
     </script>
-    
+
 	<h:form prependId="false">
-	
+
 		<p:outputPanel>
+
+			<div class="ui-g">
+				<div class="ui-g-6">
+					<p:inputText id="formName" 
+						style="width: 100%"
+						value="#{editForm.formName}"
+						placeholder="enter the form name" />
+				</div>
+				<div class="ui-g-1">
+					<p:commandButton value="Load Resource" />
+				</div>
+			</div>
+			
+			<div class="ui-g">
+				<div class="ui-g-6">
+					<p:inputText id="formUrl" 
+						style="width: 100%"
+						value="#{editForm.resource}"
+						placeholder="enter the resource name, ex:  startForm.xhtml" />
+				</div>
+			</div>
+
 			<div class="ui-g">
 				<div class="ui-g-12">
 					<h3>XHTML Edit</h3>
 					<p:outputPanel styleClass="cd-editor">
-						<pe:codeMirror 
-							id="xmlSource" mode="xml" theme="eclipse"  
-	    					lineNumbers="true"  
-	    					matchBrackets="true"
-	    					value="${editForm.xhtml}"/>  										
+						<pe:codeMirror id="xmlSource" mode="xml" theme="eclipse"
+							lineNumbers="true" matchBrackets="true" value="${editForm.xhtml}" />
 					</p:outputPanel>
 				</div>
 			</div>
 			<div class="ui-g">
 				<div class="ui-g-6 ui-md-2">
-					<p:commandButton	
-						value="Reload"
-						actionListener="${editForm.reload()}"
-						update="exceptionDialog"
-						oncomplete="reloadIframe()"/>
+					<p:commandButton value="Reload"
+						actionListener="${editForm.reload()}" update="exceptionDialog, framePanel"
+						oncomplete="reloadIframe()" />
 				</div>
 				<div class="ui-g-6 ui-md-2">
-					<p:commandButton value="Save"/>
+					<p:commandButton value="Save" actionListener="#{editForm.save()}"/>
 				</div>
 			</div>
 		</p:outputPanel>
 		
 		<div class="ui-g" style="margin-top: 20px">
-			<div id="wrap" class="ui-g-12" style="border-style: solid; border-width: 1px"> 
-	            <iframe id="framePreview" name="framePreview" width="100%" height="100%" frameborder="0" scrolling="auto" src="showForm.xhtml">
-	              <p>Your browser does not support iframes.</p>
-	            </iframe>
-	       	</div>
+			<div id="wrap" class="ui-g-12"
+				style="border-style: solid; border-width: 1px">
+				<h:panelGroup id="framePanel">
+					<iframe id="framePreview" name="framePreview" width="100%"
+						height="100%" frameborder="0" scrolling="auto" src="#{editForm.previewSrc}">
+						<p>Your browser does not support iframes.</p>
+					</iframe>
+				</h:panelGroup>
+			</div>
 		</div>
-		
-		<p:dialog id="exceptionDialog" header="Exception occured!" widgetVar="exceptionDialog"
-              width="800px" height="500px" visible="#{editForm.exception != null}">
-	        StackTrace: <h:outputText value="#{editForm.exception}" escape="false" />
-	    </p:dialog>
-		
+
+		<p:dialog id="exceptionDialog" header="Exception occured!"
+			widgetVar="exceptionDialog" width="800px" height="500px"
+			visible="#{editForm.exception != null}">
+	        StackTrace: <h:outputText value="#{editForm.exception}"
+				escape="false" />
+		</p:dialog>
+
 	</h:form>
 
 </h:body>

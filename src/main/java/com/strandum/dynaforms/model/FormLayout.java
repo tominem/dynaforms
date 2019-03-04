@@ -10,13 +10,17 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 
 @Entity
-public class DataForm implements Serializable{
+public class FormLayout implements Serializable{
 	
 	private static final long serialVersionUID = -4457547237976304823L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
+	
+	private String formName;
+	
+	private String resource;
 	
 	@Lob
 	@Basic(optional=false)
@@ -37,5 +41,21 @@ public class DataForm implements Serializable{
 	public void setXhtml(String xhtml) {
 		this.xhtml = xhtml;
 	}
-	
+
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
+	}
+
+	public String getFormName() {
+		return formName;
+	}
+
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
+
 }
