@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,7 +24,7 @@ public class FormLayout implements Serializable{
 	private String resource;
 	
 	@Lob
-	@Basic(optional=false)
+	@Basic(optional=false, fetch=FetchType.LAZY)
 	private String xhtml;
 
 	public Integer getId() {

@@ -61,7 +61,7 @@
 						placeholder="enter the form name" />
 				</div>
 				<div class="ui-g-1">
-					<p:commandButton value="Load Resource" />
+					<p:commandButton value="Load Resource" actionListener="#{editForm.loadResourceByFormName()}" update="@form"/>
 				</div>
 			</div>
 			
