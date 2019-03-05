@@ -58,4 +58,12 @@ public class FormConfig implements Serializable{
 		this.token = token;
 	}
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 }

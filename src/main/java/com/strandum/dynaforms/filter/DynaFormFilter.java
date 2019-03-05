@@ -64,7 +64,8 @@ public class DynaFormFilter implements Filter{
 				FormLayout formLayout = formConfig.getFormLayout();
 				String xhtmlFile = formLayout.getResource();
 				generateXhtmlIfNotExists(req, formLayout);
-				String redirect = String.format("/%s/%s", "form", xhtmlFile);
+				String redirect = String.format("/%s%s", FORM_PATH, xhtmlFile);
+				req.setAttribute("formConfigId", formConfig.getId());
 				filterConfig.getServletContext().getRequestDispatcher(redirect).forward(request, response);
 				return;
 			}
@@ -91,6 +92,12 @@ public class DynaFormFilter implements Filter{
 		try {
 			String rootPath = request.getSession().getServletContext().getRealPath("/");
 			String realFormPath = rootPath + FORM_PATH;
+			File realFormPathFolder = new File(realFormPath);
+			
+			if (!realFormPathFolder.exists()) {
+				realFormPathFolder.mkdirs();
+			}
+			
 			File xhtmlFile = new File(realFormPath, formLayout.getResource());
 			if (!xhtmlFile.exists()) {
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

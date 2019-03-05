@@ -87,6 +87,7 @@ public class EditFormBean implements Serializable {
 	public void loadResourceByFormName() {
 		FormLayout formLayout = formLayoutRepository.findByFormName(getFormName());
 		if (formLayout != null) {
+			this.formLayout = formLayout;
 			setFormName(formLayout.getFormName());
 			setResource(formLayout.getResource());
 			setXhtml(formLayout.getXhtml());
